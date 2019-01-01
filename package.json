@@ -3,8 +3,7 @@
   "version": "0.0.0-dev",
   "license": "MIT",
   "description": "",
-  "main": "dist/main.js",
-  "typings": "dist/main.d.ts",
+  "main": "main.js",
   "scripts": {
     "start": "node -r ts-node/register/transpile-only src/main.tsx",
     "pack": "electron-builder --dir",
@@ -29,6 +28,17 @@
     "commit": "git-cz"
   },
   "build": {
+    "appId": "proton.native.starter",
+    "files": [
+      "package.json",
+      {
+        "from": "dist/output",
+        "to": ".",
+        "filter": [
+          "**/*.js"
+        ]
+      }
+    ],
     "protonNodeVersion": "current",
     "mac": {
       "identity": null

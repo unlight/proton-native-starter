@@ -6,7 +6,7 @@
     "importHelpers": true,
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
-    "outDir": "dist",
+    "outDir": "dist/output",
     "pretty": true,
     "removeComments": false,
     "sourceMap": true,
