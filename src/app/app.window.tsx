@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Window, Text, Box } from 'proton-native';
+import { Window, Text, Box, WindowProps } from 'proton-native';
 
-export class AppWindow extends React.Component {
+export class AppWindow extends React.Component<WindowProps> {
 
     readonly state = {
         currentTime: new Date().toString(),
@@ -11,6 +11,7 @@ export class AppWindow extends React.Component {
         return <Window onClose={() => console.log('Closing')} >
             <Box padded={true}>
                 <Text stretchy={true}>{this.state.currentTime}</Text>
+                <Text stretchy={true}>{'Hello'}</Text>
             </Box>
         </Window>;
     }

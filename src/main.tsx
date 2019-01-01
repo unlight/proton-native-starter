@@ -1,21 +1,19 @@
 import * as React from 'react';
 import { App, render } from 'proton-native';
-import { AppWindow } from './app/app.window';
-import { AppMenu } from './app/app.menu';
 
-export class Main extends React.Component {
-
-    render() {
-        console.log('Main render');
-        return <App onShouldQuit={() => console.log('Quitting')}>
-            <AppMenu></AppMenu>
-            <AppWindow></AppWindow>
-        </App>;
-    }
-
-    componentWillUnmount() {
-        console.log('Main componentWillUnmount');
-    }
+function main() {
+    const { AppMenu } = require('./app/app.menu');
+    const { AppWindow } = require('./app/app.window');
+    render(<App onShouldQuit={() => console.log('Quitting')}>
+        <AppMenu></AppMenu>
+        <AppWindow></AppWindow>
+    </App>);
 }
 
-render(<Main />);
+main();
+
+// Hot Module Replacement API
+if (module.hot) {
+    module.hot.accept('./app/app.menu', main);
+    module.hot.accept('./app/app.window', main);
+}
