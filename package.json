@@ -5,7 +5,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "dev": "run-p \"webpack -- --watch\" app:main",
+    "dev": "webpack -- --watch",
     "webpack": "webpack",
     "app:main": "just-wait -t 30 -p \"dist/output/main.js\" && node dist/output/main.js",
     "dev:2": "node -r ts-node/register/transpile-only src/main.tsx",

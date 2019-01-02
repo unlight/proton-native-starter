@@ -2,8 +2,8 @@
 /* eslint-disable no-console, import/max-dependencies */
 import * as fs from 'fs';
 import * as path from 'path';
-import { Configuration, Options, Entry } from 'webpack';
-import webpack = require('webpack');
+import * as webpack  from 'webpack';
+import { fork, ChildProcess } from 'child_process';
 
 const sourcePath = path.join(__dirname, 'src');
 const buildPath = path.join(__dirname, 'dist/output');
@@ -43,7 +43,7 @@ export = (options: ConfigOptions = {}) => {
     for (const [key, value] of Object.entries(options)) {
         (value === true) ? process.stdout.write(`${key} `) : (process.stdout.write(value ? `${key}:${value} ` : ''));
     }
-    const stats: Options.Stats = {
+    const stats: webpack.Options.Stats = {
         version: false,
         maxModules: 0,
         children: false,
@@ -56,7 +56,7 @@ export = (options: ConfigOptions = {}) => {
             // builtAt: false,
             assets: false,
             entrypoints: false,
-        } as Options.Stats);
+        } as webpack.Options.Stats);
     }
     const watchOptions = {
         ignored: /node_modules/,
@@ -70,13 +70,14 @@ export = (options: ConfigOptions = {}) => {
         return Boolean(result);
     }
 
-    let config: Configuration = {
+    let config: webpack.Configuration = {
         mode: options.mode,
         context,
         entry: (() => {
             const result = ['./src/main.tsx'];
             if (options.hmr) {
-                result.unshift('node-hot-loader/lib/HmrClient');
+                // result.unshift('node-hot-loader/lib/HmrClient');
+                // result.unshift('webpack/hot/signal');
                 // result.unshift(`webpack/hot/poll?${pollInterval}`);
             }
             return result;
@@ -87,7 +88,7 @@ export = (options: ConfigOptions = {}) => {
             chunkFilename: '[name].js',
             filename: '[name].js',
         },
-        devtool: ((): Options.Devtool => {
+        devtool: ((): webpack.Options.Devtool => {
             if (options.test) return 'inline-source-map';
             if (options.prod) return 'source-map';
             return ('webpack_devtool' in process.env) ? process.env.webpack_devtool as any : 'cheap-source-map';
@@ -132,16 +133,25 @@ export = (options: ConfigOptions = {}) => {
             const result: any[] = [];
             if (options.hmr) {
                 result.push(new webpack.HotModuleReplacementPlugin());
-                // result.push({
-                //     apply(compiler: webpack.Compiler) {
-                //         // debugger;
-                //         (compiler as any).outputPath = buildPath;
-                //         const HmrServer = require('node-hot-loader/lib/HmrServer').default;
-                //         const hmrServer = new HmrServer({ compiler, fork: true });
-                //         compiler.hooks.done.tap('done', hmrServer.compilerDone.bind(hmrServer));
-                //         compiler.hooks.compile.tap('invalid', hmrServer.compilerInvalid.bind(hmrServer));
-                //     }
-                // });
+                result.push({
+                    apply(compiler: webpack.Compiler) {
+                        console.log('--------------- webpack', process.pid);
+                        // debugger;
+                        // (compiler as any).outputPath = buildPath;
+                        // const HmrServer = require('node-hot-loader/lib/HmrServer').default;
+                        // const hmrServer = new HmrServer({ compiler, fork: true });
+                        let proc: ChildProcess;
+                        compiler.hooks.done.tap('done', (stats: webpack.Stats) => {
+                            if (proc) {
+                                proc.kill();
+                            }
+                            console.log('webpack --- ', process.pid);
+                            const [entry] = Object.values(stats.compilation.assets);
+                            proc = fork(entry.existsAt);
+                        });
+                        // compiler.hooks.compile.tap('invalid', hmrServer.compilerInvalid.bind(hmrServer));
+                    }
+                });
             }
             if (options.dev) {
                 result.push(new webpack.BannerPlugin({ banner: 'require("source-map-support").install();', raw: true, entryOnly: false }));

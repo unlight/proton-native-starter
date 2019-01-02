@@ -8,7 +8,7 @@ export class AppWindow extends React.Component<WindowProps> {
     };
 
     render() {
-        return <Window onClose={() => console.log('Closing')} >
+        return <Window onClose={() => console.log('Closing')}>
             <Box padded={true}>
                 <Text stretchy={true}>{this.state.currentTime}</Text>
                 <Text stretchy={true}>{'Hello'}</Text>
