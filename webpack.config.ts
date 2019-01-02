@@ -2,7 +2,7 @@
 /* eslint-disable no-console, import/max-dependencies */
 import * as fs from 'fs';
 import * as path from 'path';
-import * as webpack  from 'webpack';
+import * as webpack from 'webpack';
 import { fork, ChildProcess } from 'child_process';
 
 const sourcePath = path.join(__dirname, 'src');
